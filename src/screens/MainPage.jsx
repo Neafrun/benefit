@@ -58,10 +58,10 @@ const MainPage = () => {
       <Description>아래 버튼들을 클릭하여 다른 페이지로 이동하세요!</Description>
       
       <ButtonGrid>
-        <PageButton to="/page1">📄 Page 1</PageButton>
-        <PageButton to="/page2">📄 Page 2</PageButton>
-        <PageButton to="/page3">📄 Page 3</PageButton>
-        <PageButton to="/page4">📄 Page 4</PageButton>
+        <PageButton to="/page1">📄 전진영</PageButton>
+        <PageButton to="/page2">📄 양하진</PageButton>
+        <PageButton to="/page3">📄 백승호</PageButton>
+        <PageButton to="/page4">📄 이지훈</PageButton>
         <PageButton to="/page5">📄 Page 5</PageButton>
         <PageButton to="/page6">📄 Page 6</PageButton>
       </ButtonGrid>
