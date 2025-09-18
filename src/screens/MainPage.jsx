@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import { FaSearch } from 'react-icons/fa';
+import { FaSearch, FaTrophy } from 'react-icons/fa';
+import { FiArrowUpRight } from 'react-icons/fi';
 
 // --- 스타일링 부분 (styled-components) ---
 
@@ -14,10 +15,15 @@ const PageContainer = styled.div`
   align-items: center;
 `;
 
+const AutocompleteWrapper = styled.div`
+  width: 100%;
+  max-width: 600px;
+  position: relative;
+`;
+
 // 검색창
 const SearchBarContainer = styled.div`
   width: 100%;
-  max-width: 600px;
   margin-bottom: 40px;
   position: relative;
 `;
@@ -44,6 +50,51 @@ const SearchIcon = styled(FaSearch)`
   color: #7DB249;
   cursor: pointer;
 `;
+
+// 자동완성 드롭다운
+const AutocompleteContainer = styled.div`
+  position: absolute;
+  top: 55px; /* 검색창 바로 아래 */
+  left: 0;
+  right: 0;
+  background-color: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid #ddd;
+  z-index: 100;
+`;
+
+const AutocompleteList = styled.ul`
+  list-style: none;
+  margin: 0;
+  padding: 10px 0;
+`;
+
+const AutocompleteItem = styled.li`
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  cursor: pointer;
+  
+  &:hover {
+    background-color: #f5f5f5;
+  }
+  
+  span {
+    flex: 1;
+    margin-left: 15px;
+  }
+`;
+
+const AutocompleteFooter = styled.div`
+  padding: 12px 20px;
+  border-top: 1px solid #f0f0f0;
+  text-align: right;
+  font-size: 12px;
+  color: #888;
+  cursor: pointer;
+`;
+
 
 // 캘린더
 const CalendarContainer = styled.div`
@@ -131,21 +182,26 @@ const SectionTitle = styled.div`
   border-radius: 30px;
   font-size: 18px;
   font-weight: bold;
-  margin-bottom: 20px;
+  margin-bottom: 30px; /* 아이콘과 겹치지 않게 간격 추가 */
 `;
 
-const KeywordButtons = styled.div`
+const KeywordContainer = styled.div`
   display: flex;
-  gap: 20px;
+  gap: 50px; /* 버튼 간 간격을 넓힘 */
   flex-wrap: wrap;
   justify-content: center;
+  align-items: center;
+`;
+
+const KeywordButtonWrapper = styled.div`
+  position: relative; /* 아이콘 위치 조정을 위해 relative 설정 */
 `;
 
 const KeywordButton = styled.button`
   background-color: white;
   border: 1px solid #ccc;
   border-radius: 30px;
-  padding: 12px 35px;
+  padding: 12px 45px;
   font-size: 16px;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
@@ -154,6 +210,14 @@ const KeywordButton = styled.button`
     background-color: #f0f7e9;
     border-color: #7DB249;
   }
+`;
+
+const TrophyIcon = styled(FaTrophy)`
+  position: absolute;
+  top: -15px; /* 버튼 위로 위치 조정 */
+  left: 15px; /* 왼쪽 상단으로 위치 조정 */
+  font-size: 24px;
+  color: ${props => props.color || '#000'};
 `;
 
 const RecommendationBox = styled.div`
@@ -170,10 +234,17 @@ const RecommendationBox = styled.div`
 `;
 
 
+// --- 임시 데이터 ---
+const allKeywords = ['청년 월세', '청년 자립', '청년 일자리', '노인 복지', '아동 수당'];
+
 // --- 메인 컴포넌트 ---
 const MainPage = () => {
   const [currentDate, setCurrentDate] = useState(new Date(2025, 5)); 
   const [calendarDays, setCalendarDays] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
+  const [isAutocompleteOpen, setIsAutocompleteOpen] = useState(false);
+  const searchRef = useRef(null);
 
   const events = {
     '2025-6-3': "청년 주택 지원",
@@ -181,13 +252,12 @@ const MainPage = () => {
     '2025-6-27': "학자금",
   };
   
+  // 캘린더 날짜 생성
   useEffect(() => {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
-
     const firstDayOfMonth = new Date(year, month, 1).getDay();
     const lastDateOfMonth = new Date(year, month + 1, 0).getDate();
-
     const days = [];
     for (let i = 0; i < firstDayOfMonth; i++) {
       days.push({ day: null, key: `empty-${i}`});
@@ -197,6 +267,40 @@ const MainPage = () => {
     }
     setCalendarDays(days);
   }, [currentDate]);
+
+  // 외부 클릭 감지해서 자동완성 창 닫기
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setIsAutocompleteOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    if (value) {
+      const filteredSuggestions = allKeywords.filter(keyword =>
+        keyword.includes(value)
+      );
+      setSuggestions(filteredSuggestions);
+      setIsAutocompleteOpen(true);
+    } else {
+      setSuggestions([]);
+      setIsAutocompleteOpen(false);
+    }
+  };
+
+  const handleSuggestionClick = (suggestion) => {
+    setSearchTerm(suggestion);
+    setIsAutocompleteOpen(false);
+  };
 
   const goToPreviousMonth = () => {
       setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
@@ -209,10 +313,34 @@ const MainPage = () => {
 
   return (
     <PageContainer>
-      <SearchBarContainer>
-        <SearchInput placeholder="검색어를 입력하세요." />
-        <SearchIcon />
-      </SearchBarContainer>
+      <AutocompleteWrapper ref={searchRef}>
+        <SearchBarContainer>
+          <SearchInput 
+            placeholder="검색어를 입력하세요." 
+            value={searchTerm}
+            onChange={handleInputChange}
+            onFocus={() => searchTerm && setIsAutocompleteOpen(true)}
+          />
+          <SearchIcon />
+        </SearchBarContainer>
+
+        {isAutocompleteOpen && suggestions.length > 0 && (
+          <AutocompleteContainer>
+            <AutocompleteList>
+              {suggestions.map((suggestion, index) => (
+                <AutocompleteItem key={index} onClick={() => handleSuggestionClick(suggestion)}>
+                  <FaSearch color="#888" />
+                  <span>{suggestion}</span>
+                  <FiArrowUpRight color="#888" />
+                </AutocompleteItem>
+              ))}
+            </AutocompleteList>
+            <AutocompleteFooter onClick={() => setIsAutocompleteOpen(false)}>
+              검색 기록 삭제 / 자동완성 끄기
+            </AutocompleteFooter>
+          </AutocompleteContainer>
+        )}
+      </AutocompleteWrapper>
 
       <CalendarContainer>
         <CalendarHeader>
@@ -237,11 +365,20 @@ const MainPage = () => {
 
       <Section>
         <SectionTitle>이달의 복지 키워드</SectionTitle>
-        <KeywordButtons>
-          <KeywordButton>청년월세</KeywordButton>
-          <KeywordButton>연금</KeywordButton>
-          <KeywordButton>아동복지</KeywordButton>
-        </KeywordButtons>
+        <KeywordContainer>
+          <KeywordButtonWrapper>
+            <TrophyIcon color="#eac54f" />
+            <KeywordButton>청년월세</KeywordButton>
+          </KeywordButtonWrapper>
+          <KeywordButtonWrapper>
+            <TrophyIcon color="#a7a7a7" />
+            <KeywordButton>연금</KeywordButton>
+          </KeywordButtonWrapper>
+          <KeywordButtonWrapper>
+            <TrophyIcon color="#b4835e" />
+            <KeywordButton>아동복지</KeywordButton>
+          </KeywordButtonWrapper>
+        </KeywordContainer>
       </Section>
       
       <Section>
@@ -256,3 +393,4 @@ const MainPage = () => {
 };
 
 export default MainPage;
+

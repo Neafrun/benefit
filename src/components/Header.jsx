@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { FaRegBell } from 'react-icons/fa'; // 속이 빈 종 아이콘으로 변경
+import { FaRegBell } from 'react-icons/fa';
 import { HiMenu } from 'react-icons/hi';
+import Notification from './Notification'; // 새로 만든 Notification 컴포넌트 가져오기
 
 const HeaderContainer = styled.header`
   width: 100%;
@@ -10,11 +11,12 @@ const HeaderContainer = styled.header`
   display: flex;
   justify-content: center;
   padding: 0 20px;
+  position: relative; /* 자식 요소의 absolute 포지셔닝 기준 */
 `;
 
 const HeaderInner = styled.div`
   width: 100%;
-  max-width: 1200px; /* 최대 너비 설정 */
+  max-width: 1200px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -22,17 +24,17 @@ const HeaderInner = styled.div`
 `;
 
 const Logo = styled(Link)`
-  font-family: 'Times New Roman', Times, serif; /* 세리프 폰트로 변경 */
+  font-family: 'Times New Roman', Times, serif;
   font-size: 26px;
   font-weight: normal;
-  letter-spacing: 1.5px; /* 글자 간격 조정 */
+  letter-spacing: 1.5px;
   color: #333;
   text-decoration: none;
 `;
 
 const NavLinks = styled.nav`
   display: flex;
-  gap: 50px; /* 메뉴 간격 조정 */
+  gap: 50px;
   
   @media (max-width: 768px) {
     display: none;
@@ -43,6 +45,7 @@ const NavLink = styled(Link)`
   font-size: 16px;
   font-weight: 500;
   color: #555;
+  text-decoration: none; /* 밑줄 제거 */
   transition: color 0.2s ease-in-out;
   
   &:hover {
@@ -53,23 +56,42 @@ const NavLink = styled(Link)`
 const UserActions = styled.div`
   display: flex;
   align-items: center;
-  gap: 25px; /* 아이콘/버튼 간격 조정 */
+  gap: 25px;
 `;
 
 const IconWrapper = styled.div`
-  font-size: 26px; /* 아이콘 크기 조정 */
+  font-size: 26px;
   color: #555;
   cursor: pointer;
   display: flex;
   align-items: center;
+  position: relative;
 `;
 
+const NotificationBadge = styled.span`
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: #E63946;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+`;
+
+
 const LoginButton = styled(Link)`
-  font-family: 'Times New Roman', Times, serif; /* 세리프 폰트로 변경 */
+  font-family: 'Times New Roman', Times, serif;
   font-size: 16px;
-  letter-spacing: 1px; /* 글자 간격 조정 */
+  letter-spacing: 1px;
   font-weight: normal;
   color: #555;
+  text-decoration: none; /* 밑줄 제거 */
 
   @media (max-width: 768px) {
     display: none;
@@ -77,7 +99,7 @@ const LoginButton = styled(Link)`
 `;
 
 const MenuIcon = styled(IconWrapper)`
-  font-size: 28px; /* 메뉴 아이콘 크기 조정 */
+  font-size: 28px;
   display: none;
   
   @media (max-width: 768px) {
@@ -86,6 +108,12 @@ const MenuIcon = styled(IconWrapper)`
 `;
 
 const Header = () => {
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+
+  const toggleNotification = () => {
+    setIsNotificationOpen(!isNotificationOpen);
+  };
+
   return (
     <HeaderContainer>
       <HeaderInner>
@@ -96,8 +124,9 @@ const Header = () => {
           <NavLink to="/calendar">알림 캘린더</NavLink>
         </NavLinks>
         <UserActions>
-          <IconWrapper>
+          <IconWrapper onClick={toggleNotification}>
             <FaRegBell />
+            <NotificationBadge>!</NotificationBadge> 
           </IconWrapper>
           <LoginButton to="/login">LOGIN</LoginButton>
           <MenuIcon>
@@ -105,6 +134,7 @@ const Header = () => {
           </MenuIcon>
         </UserActions>
       </HeaderInner>
+      {isNotificationOpen && <Notification />}
     </HeaderContainer>
   );
 };
