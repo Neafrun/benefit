@@ -1,91 +1,18 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-// 아이콘들을 사용하기 위해 react-icons 라이브러리에서 필요한 것들을 가져옴
-import { FaSearch, FaBell } from 'react-icons/fa';
-import { HiMenu } from 'react-icons/hi';
+import { FaSearch } from 'react-icons/fa';
 
 // --- 스타일링 부분 (styled-components) ---
 
-// 전체 페이지를 감싸는 컨테이너
 const PageContainer = styled.div`
   width: 100%;
   max-width: 1000px;
   margin: 0 auto;
-  padding: 20px;
-  font-family: 'Noto Sans KR', sans-serif; // 깔끔한 한글 폰트
+  padding: 40px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #fff;
 `;
-
-// 헤더 (로고, 메뉴, 로그인)
-const Header = styled.header`
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 10px;
-  border-bottom: 1px solid #eee;
-  margin-bottom: 30px;
-`;
-
-const Logo = styled.h1`
-  font-size: 24px;
-  font-weight: bold;
-  letter-spacing: 2px;
-  margin: 0;
-`;
-
-const NavLinks = styled.nav`
-  display: flex;
-  gap: 40px;
-  @media (max-width: 768px) { // 화면 작아지면 숨김
-    display: none;
-  }
-`;
-
-const NavLink = styled.a`
-  font-size: 16px;
-  font-weight: 500;
-  text-decoration: none;
-  color: #333;
-  cursor: pointer;
-  &:hover {
-    color: #5a8b2e;
-  }
-`;
-
-const UserActions = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 20px;
-`;
-
-const IconWrapper = styled.div`
-  font-size: 22px;
-  color: #555;
-  cursor: pointer;
-`;
-
-const LoginButton = styled.a`
-  font-size: 14px;
-  font-weight: bold;
-  text-decoration: none;
-  color: #333;
-  cursor: pointer;
-   @media (max-width: 768px) { // 화면 작아지면 숨김
-    display: none;
-  }
-`;
-
-const MenuIcon = styled(IconWrapper)`
-  display: none; // 평소엔 숨김
-  @media (max-width: 768px) { // 화면 작아지면 보임
-    display: block;
-  }
-`;
-
 
 // 검색창
 const SearchBarContainer = styled.div`
@@ -115,6 +42,7 @@ const SearchIcon = styled(FaSearch)`
   transform: translateY(-50%);
   font-size: 20px;
   color: #7DB249;
+  cursor: pointer;
 `;
 
 // 캘린더
@@ -127,10 +55,21 @@ const CalendarContainer = styled.div`
 `;
 
 const CalendarHeader = styled.div`
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   font-size: 22px;
   font-weight: bold;
   margin-bottom: 20px;
+`;
+
+const MonthNavButton = styled.button`
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0 15px;
+    color: #555;
 `;
 
 const CalendarGrid = styled.div`
@@ -152,10 +91,10 @@ const DayCell = styled.div`
   font-size: 14px;
   position: relative;
   
-  &:nth-child(7n+1) { // 일요일
+  &:nth-child(7n+1) { /* 일요일 */
     color: red;
   }
-  &:nth-child(7n) { // 토요일
+  &:nth-child(7n) { /* 토요일 */
     color: blue;
   }
 `;
@@ -166,13 +105,11 @@ const EventTag = styled.div`
   font-size: 12px;
   padding: 3px 5px;
   border-radius: 5px;
-  position: absolute;
-  left: 5px;
-  right: 5px;
-  top: 30px;
+  margin: 2px auto 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  cursor: pointer;
 `;
 
 // 키워드 및 추천 섹션
@@ -200,7 +137,7 @@ const SectionTitle = styled.div`
 const KeywordButtons = styled.div`
   display: flex;
   gap: 20px;
-  flex-wrap: wrap; // 화면 작아지면 줄바꿈
+  flex-wrap: wrap;
   justify-content: center;
 `;
 
@@ -233,56 +170,71 @@ const RecommendationBox = styled.div`
 `;
 
 
-// --- 캘린더 데이터 ---
-// 2025년 6월 데이터. 6월 1일은 일요일부터 시작.
-const calendarDays = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30"];
-const events = {
-  3: "청년 주택 지원",
-  11: "채움 공제 지원",
-  27: "학자금",
-};
-
 // --- 메인 컴포넌트 ---
-
 const MainPage = () => {
+  const [currentDate, setCurrentDate] = useState(new Date(2025, 5)); 
+  const [calendarDays, setCalendarDays] = useState([]);
+
+  const events = {
+    '2025-6-3': "청년 주택 지원",
+    '2025-6-11': "채움 공제 지원",
+    '2025-6-27': "학자금",
+  };
+  
+  useEffect(() => {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+
+    const firstDayOfMonth = new Date(year, month, 1).getDay();
+    const lastDateOfMonth = new Date(year, month + 1, 0).getDate();
+
+    const days = [];
+    for (let i = 0; i < firstDayOfMonth; i++) {
+      days.push({ day: null, key: `empty-${i}`});
+    }
+    for (let i = 1; i <= lastDateOfMonth; i++) {
+      days.push({ day: i, key: i });
+    }
+    setCalendarDays(days);
+  }, [currentDate]);
+
+  const goToPreviousMonth = () => {
+      setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
+  };
+
+  const goToNextMonth = () => {
+      setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+  };
+
+
   return (
     <PageContainer>
-      {/* 헤더 */}
-      <Header>
-        <Logo>BENEFIT MAP</Logo>
-        <NavLinks>
-          <NavLink>복지 서비스</NavLink>
-          <NavLink>복지 알림</NavLink>
-          <NavLink>알림 캘린더</NavLink>
-        </NavLinks>
-        <UserActions>
-          <IconWrapper><FaBell /></IconWrapper>
-          <LoginButton>LOGIN</LoginButton>
-          <MenuIcon><HiMenu /></MenuIcon>
-        </UserActions>
-      </Header>
-
-      {/* 검색창 */}
       <SearchBarContainer>
         <SearchInput placeholder="검색어를 입력하세요." />
         <SearchIcon />
       </SearchBarContainer>
 
-      {/* 캘린더 */}
       <CalendarContainer>
-        <CalendarHeader>2025년 6월</CalendarHeader>
+        <CalendarHeader>
+            <MonthNavButton onClick={goToPreviousMonth}>&lt;</MonthNavButton>
+            {currentDate.getFullYear()}년 {currentDate.getMonth() + 1}월
+            <MonthNavButton onClick={goToNextMonth}>&gt;</MonthNavButton>
+        </CalendarHeader>
         <CalendarGrid>
           {['일', '월', '화', '수', '목', '금', '토'].map(day => <DayLabel key={day}>{day}</DayLabel>)}
-          {calendarDays.map((day, index) => (
-            <DayCell key={index}>
-              {day}
-              {events[day] && <EventTag>{events[day]}</EventTag>}
+          {calendarDays.map(d => (
+            <DayCell key={d.key}>
+              {d.day}
+              {d.day && events[`${currentDate.getFullYear()}-${currentDate.getMonth() + 1}-${d.day}`] && (
+                  <EventTag>
+                      {events[`${currentDate.getFullYear()}-${currentDate.getMonth() + 1}-${d.day}`]}
+                  </EventTag>
+              )}
             </DayCell>
           ))}
         </CalendarGrid>
       </CalendarContainer>
 
-      {/* 이달의 복지 키워드 */}
       <Section>
         <SectionTitle>이달의 복지 키워드</SectionTitle>
         <KeywordButtons>
@@ -292,7 +244,6 @@ const MainPage = () => {
         </KeywordButtons>
       </Section>
       
-      {/* 맞춤 추천 복지 */}
       <Section>
         <SectionTitle>맞춤 추천 복지</SectionTitle>
         <RecommendationBox>

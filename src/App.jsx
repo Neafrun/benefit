@@ -7,23 +7,20 @@ import Page3 from './screens/Page3';
 import Page4 from './screens/Page4';
 import Page5 from './screens/Page5';
 import Page6 from './screens/Page6';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import GlobalStyle from './styles/GlobalStyle';
 
 const App = () => {
   return (
     <BrowserRouter>
+      <GlobalStyle />
       <div style={{ 
-        minHeight: '100vh',
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        minHeight: '100vh'
       }}>
-        <div style={{ 
-          backgroundColor: '#333',
-          color: 'white',
-          padding: '1rem 2rem',
-          textAlign: 'center'
-        }}>
-          <h1>My Website</h1>
-        </div>
+        <Header />
         <main style={{ flex: 1 }}>
           <Routes>
             <Route path="/" element={<MainPage />} />
@@ -35,14 +32,7 @@ const App = () => {
             <Route path="/page6" element={<Page6 />} />
           </Routes>
         </main>
-        <div style={{ 
-          backgroundColor: '#333',
-          color: 'white',
-          padding: '2rem',
-          textAlign: 'center'
-        }}>
-          <p>&copy; 2024 My Website. All rights reserved.</p>
-        </div>
+        <Footer />
       </div>
     </BrowserRouter>
   );
