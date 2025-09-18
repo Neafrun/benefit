@@ -1,70 +1,43 @@
-# Getting Started with Create React App
+대림대학교 3학년 1반 2학기 팀 프로젝트 (양하진 백승호 이지훈 전진영)
+프론트 정기회의는 매주 일요일 20시
+피그마 디자인 완료 기간 (2주 9월17일까지)
+회의 내용 정리 (2025-09-07)
+1. 메인페이지
+로그인 전: 캘린더에 사람들이 가장 많이 찾아보는 복지 기본값 표시
+로그인 후: 사용자가 설정한 일정만 캘린더에 표시
+2. 복지 서비스 알림 신청
+알림서비스 신청하기 버튼 → 팝업창에서 신청 완료 메시지 후 원래 페이지로 복귀
+캘린더에 설정하기 버튼 → 팝업창에서 완료 메시지 후 원래 페이지로 복귀
+3. 복지 서비스 페이지
+로그인 사용자 기준:
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+마이페이지에서 설정한 관심 서비스가 기본으로 적용
+추가로 필터를 설정하려면 + 버튼 클릭 후 검색 필터 설정
+비로그인 사용자 기준:
 
-## Available Scripts
+모든 검색 필터가 기본으로 노출
+4. 알림 캘린더 페이지
+자신이 신청한 복지가 해당 날짜에 표시됨
 
-In the project directory, you can run:
+신청 기간이 지난 서비스는 다른 표시 방식 적용
 
-### `npm start`
+캘린더에서 표시한 서비스 삭제 가능
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+상단의 삭제 버튼으로 삭제
+5. 알림 발송 방식
+신청 당일: 1회 이메일 발송
+신청 마감 3일 전: 1회 이메일 발송
+6. 캘린더 페이지 꾸미기
+디자인/스타일링은 선택 사항 → 추후 결정
+7. 알림 버튼 기능
+알림 버튼 클릭 시 드롭다운 형식으로 알림 표시
+알림 옆에 삭제 버튼 배치 → 클릭 시 해당 서비스 삭제됨
+삭제된 서비스는 하단부로 이동
+삭제 버튼은 재알림 설정 버튼으로 변경됨
+페이지 담당
+메인 페이지, 알림 버튼 기능 → 진영
+복지 서비스 알림 신청, 복지 서비스 페이지 → 하진
+회원가입, 마이 페이지 → 승호
+캘린더 페이지 → 지훈
+디자인 할 때 중요한 포인트 가로 1920으로 맞춰서 하고 세로는 상관 X
+마감 기간은 9월 14일 8시까지
